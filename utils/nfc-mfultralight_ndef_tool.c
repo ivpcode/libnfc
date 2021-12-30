@@ -548,6 +548,43 @@
 		return bFailure==false;
 	}
 
+	bool list_nfc_devices(nfc_context *context) 
+	{
+		const MAX_DEVICE_COUNT = 1024;
+		nfc_connstring connstrings[MAX_DEVICE_COUNT];
+		size_t szDeviceFound = nfc_list_devices(context, connstrings, MAX_DEVICE_COUNT);
+
+		if (szDeviceFound == 0) {
+			write_stdout("No NFC device found.\n");
+			if (_silent_mode != 0)
+				printf("[ ]");
+
+			return true;
+		}
+
+		write_stdout("%d NFC device(s) found:\n", (int)szDeviceFound);
+		char *strinfo = NULL;
+		if (_silent_mode != 0)
+			printf("[\n");
+		for (int i = 0; i < szDeviceFound; i++) {
+			pnd = nfc_open(context, connstrings[i]);
+			if (pnd != NULL) {
+				write_stdout("- %s:\n    %s\n", nfc_device_get_name(pnd), nfc_device_get_connstring(pnd));
+				if (_silent_mode != 0)
+					printf("{ \"name\": \"%s\",  \"connection_string\": \"%s\"}\n", nfc_device_get_name(pnd),nfc_device_get_connstring(pnd),(i!=szDeviceFound-1?",":""));
+				nfc_close(pnd);
+			} else {
+				write_stdout("nfc_open failed for %s\n", connstrings[i]);
+			}
+		}
+
+		if (_silent_mode != 0)
+			printf("]");
+
+		return true;
+	}
+
+
 	char _chip_uuid[1024];
 	static int list_passive_targets(nfc_device *_pnd)
 	{
@@ -665,6 +702,12 @@
 		if (context == NULL) {
 			ERR("Unable to init libnfc (malloc)");
 			exit(EXIT_FAILURE);
+		}
+
+		if (iAction == 3) {
+			list_nfc_devices(context);
+			nfc_exit(context);
+			exit(EXIT_SUCCESS);
 		}
 
 		// Try to open the NFC device
