@@ -6,6 +6,7 @@ SET(UTILS-SOURCES
   nfc-mfclassic
   nfc-mfultralight
   nfc-mfultralight_ndef_writer
+  nfc-mfultralight_ndef_tool
   nfc-read-forum-tag3
   nfc-relay-picc
   nfc-scan-device
@@ -33,9 +34,9 @@ FOREACH(source ${UTILS-SOURCES})
     LIST(APPEND TARGETS jewel)
   ENDIF(${source} MATCHES "nfc-jewel")
 
-  IF((${source} MATCHES "nfc-mfultralight") OR (${source} MATCHES "nfc-mfclassic") OR (${source} MATCHES "nfc-mfultralight_ndef_writer"))
+  IF((${source} MATCHES "nfc-mfultralight") OR (${source} MATCHES "nfc-mfclassic") OR (${source} MATCHES "nfc-mfultralight_ndef_writer")  OR (${source} MATCHES "nfc-mfultralight_ndef_tool"))
     LIST(APPEND TARGETS mifare)
-  ENDIF((${source} MATCHES "nfc-mfultralight") OR (${source} MATCHES "nfc-mfclassic") OR (${source} MATCHES "nfc-mfultralight_ndef_writer"))
+  ENDIF((${source} MATCHES "nfc-mfultralight") OR (${source} MATCHES "nfc-mfclassic") OR (${source} MATCHES "nfc-mfultralight_ndef_writer")  OR (${source} MATCHES "nfc-mfultralight_ndef_tool"))
 
   IF(WIN32)
     IF(${source} MATCHES "nfc-scan-device")
